@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vault-docker-proxy
+  labels:
+    app: vault-docker-proxy
+  annotations:
+    # Uncomment and customize for your ingress controller
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # kubernetes.io/ingress.class: "nginx"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  # Uncomment for TLS termination
+  # tls:
+  # - hosts:
+  #   - registry.yourdomain.com
+  #   secretName: vault-docker-proxy-tls
+  rules:
+  - host: registry.yourdomain.com  # Replace with your domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: vault-docker-proxy
+            port:
+              number: 8080

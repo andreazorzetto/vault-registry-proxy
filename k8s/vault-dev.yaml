@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-dev
+  labels:
+    app: vault-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault-dev
+  template:
+    metadata:
+      labels:
+        app: vault-dev
+    spec:
+      containers:
+      - name: vault
+        image: hashicorp/vault:1.15
+        ports:
+        - containerPort: 8200
+          name: vault
+        env:
+        - name: VAULT_DEV_ROOT_TOKEN_ID
+          value: "dev-root-token"
+        - name: VAULT_DEV_LISTEN_ADDRESS
+          value: "0.0.0.0:8200"
+        - name: VAULT_ADDR
+          value: "http://127.0.0.1:8200"
+        command:
+        - vault
+        - server
+        - -dev
+        - -dev-listen-address=0.0.0.0:8200
+        - -dev-root-token-id=dev-root-token
+        livenessProbe:
+          httpGet:
+            path: /v1/sys/health
+            port: vault
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /v1/sys/health
+            port: vault
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-dev
+  labels:
+    app: vault-dev
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8200
+    targetPort: vault
+    protocol: TCP
+    name: vault
+  selector:
+    app: vault-dev

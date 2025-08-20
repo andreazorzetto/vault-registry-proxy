@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-docker-proxy-config
+  labels:
+    app: vault-docker-proxy
+data:
+  # For testing with Vault dev server in the same namespace
+  vault-addr: "http://vault-dev:8200"
+  # For production, use your actual Vault server:
+  # vault-addr: "https://vault.vault.svc.cluster.local:8200"
+  # vault-addr: "https://your-vault-server:8200"
