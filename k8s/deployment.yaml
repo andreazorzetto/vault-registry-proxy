@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: vault-docker-proxy
-        image: vault-docker-proxy:latest
+        image: andreazorzetto/vault-docker-proxy:latest
         ports:
         - containerPort: 8080
           name: http

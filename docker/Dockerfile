@@ -19,13 +19,20 @@ FROM alpine:latest
 # Install ca-certificates for HTTPS requests
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /root/
+# Create app directory and non-root user
+RUN adduser -D -u 65534 -g appuser appuser
+
+WORKDIR /app
 
 # Copy the binary from builder stage
 COPY --from=builder /app/vault-docker-proxy .
 
-# Make the binary executable
-RUN chmod +x vault-docker-proxy
+# Make the binary executable and set proper ownership
+RUN chmod +x vault-docker-proxy && \
+    chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 8080
