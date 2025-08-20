@@ -24,6 +24,9 @@ WORKDIR /root/
 # Copy the binary from builder stage
 COPY --from=builder /app/vault-docker-proxy .
 
+# Make the binary executable
+RUN chmod +x vault-docker-proxy
+
 # Expose port
 EXPOSE 8080
 
